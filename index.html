@@ -17,10 +17,28 @@ html, body {
     width: 100%;
     height: 100vh;
 }
+    
+#controls {
+    padding: 10px;
+    background: white;
+}
+
+#controls button {
+    margin-right: 5px;
+}
 </style>
 </head>
 
 <body>
+
+<div id="controls">
+<button onclick="showIssue(0)">All</button>
+<button onclick="showIssue(1)">Issue 1</button>
+<button onclick="showIssue(2)">Issue 2</button>
+<button onclick="showIssue(3)">Issue 3</button>
+<button onclick="showIssue(4)">Issue 4</button>
+<button onclick="showIssue(5)">Issue 5</button>
+</div>
 
 <div id="map"></div>
 
@@ -44,12 +62,34 @@ Promise.all([
         }
     }).addTo(map);
 
-    L.geoJSON(lines, {
+let lineLayer;
+
+function showIssue(issueNum) {
+
+    if (lineLayer) {
+        map.removeLayer(lineLayer);
+    }
+
+    lineLayer = L.geoJSON(lines, {
+
+        filter: function(feature) {
+
+            if (issueNum === 0) {
+                return true;
+            }
+
+            return feature.properties.issue === issueNum;
+        },
+
         style: {
             color: "#cc0000",
             weight: 2
         }
+
     }).addTo(map);
+}
+
+showIssue(0);
 
     L.geoJSON(locations, {
         pointToLayer: function(feature, latlng) {
