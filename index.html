@@ -78,7 +78,8 @@ function showIssue(issueNum) {
                 return true;
             }
 
-            return feature.properties.issue === issueNum;
+    console.log(feature.properties);
+    return feature.properties.issue === issueNum;
         },
 
         style: {
