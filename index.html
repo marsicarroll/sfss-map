@@ -62,15 +62,17 @@ Promise.all([
         }
     }).addTo(map);
 
+window.linesData = lines;
+
 let lineLayer;
 
-function showIssue(issueNum) {
+window.showIssue = function(issueNum) {
 
     if (lineLayer) {
         map.removeLayer(lineLayer);
     }
 
-    lineLayer = L.geoJSON(lines, {
+    lineLayer = L.geoJSON(window.linesData, {
 
         filter: function(feature) {
 
@@ -78,8 +80,7 @@ function showIssue(issueNum) {
                 return true;
             }
 
-    console.log(feature.properties);
-    return feature.properties.issue === issueNum;
+            return Number(feature.properties.issue) === issueNum;
         },
 
         style: {
@@ -88,7 +89,7 @@ function showIssue(issueNum) {
         }
 
     }).addTo(map);
-}
+};
 
 showIssue(0);
 
