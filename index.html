@@ -112,10 +112,11 @@ submissionLayer = L.geoJSON(window.linesData, {
         return feature.properties.type === "submission";
     },
 
-    style: {
-        color: "blue",
-        weight: 2
-    }
+   style: {
+    color: "blue",
+    weight: 2,
+    opacity: 0.8
+}
 
 }).addTo(map);
 
@@ -133,9 +134,9 @@ setTimeout(function() {
         },
 
         style: {
-            color: "red",
-            weight: 2
-        }
+    color: "red",
+    weight: 2
+}
 
     }).addTo(map);
 
