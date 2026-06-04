@@ -71,13 +71,12 @@ Promise.all([
 
 window.linesData = lines;
 
-let lineLayer;
+let submissionLayer;
+let distributionLayer;
 
 window.showIssue = function(issueNum) {
 
-    if (lineLayer) {
-        map.removeLayer(lineLayer);
-    }
+    
 
 if (submissionLayer) {
     map.removeLayer(submissionLayer);
@@ -128,7 +127,7 @@ setTimeout(function() {
 }, 1000);
 };
 
-showIssue(0);
+showIssue(1);
 
     L.geoJSON(locations, {
         pointToLayer: function(feature, latlng) {
