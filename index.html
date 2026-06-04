@@ -71,7 +71,8 @@ Promise.all([
 
 window.linesData = lines;
 
-let lineLayer;
+let submissionLayer;
+let distributionLayer;
 
 window.showIssue = function(issueNum) {
 
@@ -79,33 +80,53 @@ window.showIssue = function(issueNum) {
         map.removeLayer(lineLayer);
     }
 
-    lineLayer = L.geoJSON(window.linesData, {
+if (submissionLayer) {
+    map.removeLayer(submissionLayer);
+}
+
+if (distributionLayer) {
+    map.removeLayer(distributionLayer);
+}
+
+submissionLayer = L.geoJSON(window.linesData, {
+
+    filter: function(feature) {
+
+        if (Number(feature.properties.issue) !== issueNum) {
+            return false;
+        }
+
+        return feature.properties.type === "submission";
+    },
+
+    style: {
+        color: "blue",
+        weight: 2
+    }
+
+}).addTo(map);
+
+setTimeout(function() {
+
+    distributionLayer = L.geoJSON(window.linesData, {
 
         filter: function(feature) {
 
-            if (issueNum === 0) {
-                return true;
+            if (Number(feature.properties.issue) !== issueNum) {
+                return false;
             }
 
-            return Number(feature.properties.issue) === issueNum;
+            return feature.properties.type === "distribution";
         },
 
-        style: function(feature) {
-
-    if (feature.properties.type === "submission") {
-        return {
-            color: "blue",
+        style: {
+            color: "red",
             weight: 2
-        };
-    }
-
-    return {
-        color: "red",
-        weight: 2
-    };
-}
+        }
 
     }).addTo(map);
+
+}, 1000);
 };
 
 showIssue(0);
