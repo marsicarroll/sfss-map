@@ -127,9 +127,9 @@ setTimeout(function() {
 
         filter: function(feature) {
 
-            if (Number(feature.properties.issue) !== issueNum) {
-                return false;
-            }
+            if (issueNum !== 0 && Number(feature.properties.issue) !== issueNum) {
+    return false;
+}
 
             return feature.properties.type === "distribution";
         },
