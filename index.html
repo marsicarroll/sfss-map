@@ -90,10 +90,20 @@ window.showIssue = function(issueNum) {
             return Number(feature.properties.issue) === issueNum;
         },
 
-        style: {
-            color: "#cc0000",
+        style: function(feature) {
+
+    if (feature.properties.type === "submission") {
+        return {
+            color: "blue",
             weight: 2
-        }
+        };
+    }
+
+    return {
+        color: "red",
+        weight: 2
+    };
+}
 
     }).addTo(map);
 };
