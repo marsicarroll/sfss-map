@@ -80,6 +80,7 @@ let submissionLayer;
 let distributionLayer;
 
 window.showIssue = function(issueNum) {
+    currentIssue = issueNum;
 const issueDates = {
     1: "19 October 1928",
     2: "25 October 1928",
@@ -146,22 +147,7 @@ setTimeout(function() {
 
 showIssue(1);
 
-    const placePeople = {};
-
-locations.features.forEach(function(feature) {
-
-    const place = feature.properties.SFSSplacelabels_place_label;
-    const person = feature.properties.SFSSpeople_name;
-
-    if (!placePeople[place]) {
-        placePeople[place] = new Set();
-    }
-
-    placePeople[place].add(person);
-
-});
-
-L.geoJSON(locations, {
+    L.geoJSON(locations, {
 
     pointToLayer: function(feature, latlng) {
         return L.circleMarker(latlng, {
@@ -171,16 +157,89 @@ L.geoJSON(locations, {
 
     onEachFeature: function(feature, layer) {
 
-        const place = feature.properties.SFSSplacelabels_place_label;
+        layer.on('click', function() {
 
-        const names =
-            Array.from(placePeople[place])
-            .sort()
-            .join("<br>");
+            const place =
+                feature.properties.SFSSplacelabels_place_label;
 
-        layer.bindPopup(
-            "<b>" + place + "</b><br><br>" + names
-        );
+            const peopleAtPlace = locations.features.filter(function(f) {
+
+                return (
+                    f.properties.issue === currentIssue &&
+                    f.properties.SFSSplacelabels_place_label === place
+                );
+
+            });
+
+            let popupText =
+                "<b>" + place + "</b><br><br>";
+
+            peopleAtPlace.forEach(function(personFeature) {
+
+                const personID =
+                    personFeature.properties.person_id;
+
+                const personName =
+                    personFeature.properties.SFSSpeople_name;
+
+                let contributor = false;
+                let recipient = false;
+
+                lines.features.forEach(function(lineFeature) {
+
+                    if (
+                        Number(lineFeature.properties.issue)
+                        !== currentIssue
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        lineFeature.properties.type === "submission" &&
+                        (
+                            Number(lineFeature.properties.from_person_id)
+                            === Number(personID) ||
+                            Number(lineFeature.properties.to_person_id)
+                            === Number(personID)
+                        )
+                    ) {
+                        contributor = true;
+                    }
+
+                    if (
+                        lineFeature.properties.type === "distribution" &&
+                        (
+                            Number(lineFeature.properties.from_person_id)
+                            === Number(personID) ||
+                            Number(lineFeature.properties.to_person_id)
+                            === Number(personID)
+                        )
+                    ) {
+                        recipient = true;
+                    }
+
+                });
+
+                let roleText = "";
+
+                if (contributor && recipient) {
+                    roleText = "Contributor, Recipient";
+                } else if (contributor) {
+                    roleText = "Contributor";
+                } else if (recipient) {
+                    roleText = "Recipient";
+                }
+
+                popupText +=
+                    personName +
+                    " (" + roleText + ")" +
+                    "<br>";
+
+            });
+
+            layer.bindPopup(popupText).openPopup();
+
+        });
 
     }
 
